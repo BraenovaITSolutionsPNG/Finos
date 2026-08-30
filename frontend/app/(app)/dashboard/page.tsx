@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
@@ -23,7 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ShieldAlert, ArrowRight, Sparkles, Building2, Users } from "lucide-react";
+import { ShieldAlert, ArrowRight, Sparkles } from "lucide-react";
 
 function currency(n: number, code?: string) {
   const formatted = new Intl.NumberFormat("en-PG", {
@@ -35,6 +37,13 @@ function currency(n: number, code?: string) {
 
 export default function DashboardPage() {
   const { tenant, user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.is_admin) {
+      router.replace("/admin");
+    }
+  }, [user, router]);
 
   const { data, isLoading } = useQuery<Kpis>({
     queryKey: ["dashboard-kpis"],

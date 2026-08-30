@@ -70,16 +70,16 @@ const BUSINESS_NAV: NavSection[] = [
   },
 ];
 
-const ADMIN_NAV = [
+const ADMIN_NAV: NavSection[] = [
   {
-    section: "Platform Super-Admin",
+    section: "Platform Management",
     items: [
-      { href: "/admin", label: "Platform Overview", icon: ShieldAlert, highlight: true },
-      { href: "/audit", label: "System Audit Logs", icon: ShieldCheck },
+      { href: "/admin", label: "Platform Command Center", icon: ShieldAlert, highlight: true },
+      { href: "/audit", label: "System Audit Trail", icon: ShieldCheck },
       { href: "/search", label: "Cross-Tenant Search", icon: Search },
+      { href: "/settings", label: "Platform Settings", icon: Settings },
     ],
   },
-  ...BUSINESS_NAV,
 ];
 
 export function Sidebar() {
