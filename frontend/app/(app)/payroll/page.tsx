@@ -101,7 +101,7 @@ export default function PayrollPage() {
                 <tr key={e.id} className="border-b">
                   <td className="py-2">{e.name}</td>
                   <td>{e.position ?? "—"}</td>
-                  <td className="text-right">{e.salary} {e.currency}</td>
+                  <td className="text-right">K{e.salary} PGK</td>
                 </tr>
               ))}
               {(employees.data ?? []).length === 0 && (
@@ -150,8 +150,8 @@ export default function PayrollPage() {
                   <td className="py-2">{r.period_start} → {r.period_end}</td>
                   <td>{r.status}</td>
                   <td>{r.employee_count}</td>
-                  <td>{r.total_gross}</td>
-                  <td>{r.total_net}</td>
+                  <td>K{r.total_gross} PGK</td>
+                  <td>K{r.total_net} PGK</td>
                 </tr>
               ))}
               {(runs.data ?? []).length === 0 && (

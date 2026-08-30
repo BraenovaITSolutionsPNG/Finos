@@ -18,7 +18,10 @@ export default function ProjectsPage() {
   const qc = useQueryClient();
   const { data } = useQuery<Project[]>({
     queryKey: ["projects"],
-    queryFn: async () => (await api.get("/projects")).data,
+    queryFn: async () => {
+      const res = await api.get("/projects");
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
   const [selected, setSelected] = useState<number | null>(null);
   const projectId = selected ?? data?.[0]?.id ?? null;
@@ -122,7 +125,7 @@ export default function ProjectsPage() {
                     <td className="py-2 font-medium">{p.name}</td>
                     <td>{p.code ?? "—"}</td>
                     <td>{p.status}</td>
-                    <td className="text-right">{p.budget}</td>
+                    <td className="text-right">K{p.budget} PGK</td>
                   </tr>
                 ))}
                 {(data ?? []).length === 0 && (
@@ -136,9 +139,9 @@ export default function ProjectsPage() {
             </table>
             {financials.data && (
               <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-                <div>Invoiced: {financials.data.invoiced}</div>
-                <div>Billed: {financials.data.billed}</div>
-                <div>Budget: {financials.data.budget}</div>
+                <div>Invoiced: K{financials.data.invoiced} PGK</div>
+                <div>Billed: K{financials.data.billed} PGK</div>
+                <div>Budget: K{financials.data.budget} PGK</div>
               </div>
             )}
           </CardContent>

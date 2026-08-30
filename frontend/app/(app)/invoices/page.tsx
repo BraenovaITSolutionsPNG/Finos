@@ -141,8 +141,8 @@ export default function InvoicesPage() {
                     <td>{inv.customer?.name ?? "—"}</td>
                     <td>{inv.issue_date}</td>
                     <td>{inv.status}</td>
-                    <td className="text-right">
-                      {inv.currency} {inv.total}
+                    <td className="text-right font-medium">
+                      K{inv.total} {inv.currency || "PGK"}
                     </td>
                   </tr>
                 ))}
@@ -174,7 +174,7 @@ export default function InvoicesPage() {
                   <span className="text-lg font-semibold">
                     {detail.data.number}
                   </span>
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs">
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold">
                     {detail.data.status}
                   </span>
                 </div>
@@ -184,10 +184,10 @@ export default function InvoicesPage() {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Total: </span>
-                  <span className="font-semibold">
-                    {detail.data.currency} {detail.data.total}
+                  <span className="font-bold">
+                    K{detail.data.total} {detail.data.currency || "PGK"}
                   </span>{" "}
-                  (due {detail.data.amount_due})
+                  (due K{detail.data.amount_due} PGK)
                 </div>
                 {detail.data.attachment_url && (
                   <a

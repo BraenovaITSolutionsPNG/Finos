@@ -23,11 +23,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-function currency(n: number, code: string) {
-  return new Intl.NumberFormat("en-PG", {
-    style: "currency",
-    currency: code || "PGK",
-  }).format(n);
+function currency(n: number, code?: string) {
+  const formatted = new Intl.NumberFormat("en-PG", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n ?? 0);
+  return `K${formatted} ${code || "PGK"}`;
 }
 
 export default function DashboardPage() {

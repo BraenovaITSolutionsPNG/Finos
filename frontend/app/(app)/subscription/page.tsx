@@ -45,7 +45,8 @@ export default function SubscriptionPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-2xl font-bold">
-                {p.price}
+                K{p.price}{" "}
+                <span className="text-xs font-semibold text-primary">PGK</span>
                 <span className="text-sm font-normal text-muted-foreground">
                   /{p.interval}
                 </span>

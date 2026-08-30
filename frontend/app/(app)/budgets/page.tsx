@@ -165,11 +165,11 @@ export default function BudgetsPage() {
               <tbody>
                 {(comparison.data ?? []).map((c) => (
                   <tr key={c.account_id} className="border-b">
-                    <td className="py-2">{c.name}</td>
-                    <td>{c.budget}</td>
-                    <td>{c.actual}</td>
-                    <td className={c.actual > c.budget ? "text-destructive" : "text-green-600"}>
-                      {c.actual > c.budget ? "+" : ""}{c.actual - c.budget}
+                    <td className="py-2 font-medium">{c.name}</td>
+                    <td>K{c.budget} PGK</td>
+                    <td>K{c.actual} PGK</td>
+                    <td className={c.actual > c.budget ? "text-destructive font-medium" : "text-green-600 font-medium"}>
+                      {c.actual > c.budget ? "+" : ""}K{c.actual - c.budget} PGK
                     </td>
                   </tr>
                 ))}

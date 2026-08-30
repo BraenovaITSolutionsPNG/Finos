@@ -18,7 +18,10 @@ export default function ExpensesPage() {
   const qc = useQueryClient();
   const { data: bills } = useQuery({
     queryKey: ["bills"],
-    queryFn: async () => (await api.get("/bills")).data,
+    queryFn: async () => {
+      const res = await api.get("/bills");
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
   const { data: vendors } = useQuery<Vendor[]>({
     queryKey: ["vendors"],
@@ -211,8 +214,8 @@ export default function ExpensesPage() {
                   <td>{b.vendor?.name ?? b.vendor_id}</td>
                   <td>{b.issue_date}</td>
                   <td>{b.status}</td>
-                  <td className="text-right">{b.total}</td>
-                  <td className="text-right">{b.amount_due}</td>
+                  <td className="text-right">K{b.total} PGK</td>
+                  <td className="text-right">K{b.amount_due} PGK</td>
                 </tr>
               ))}
               {(bills ?? []).length === 0 && (

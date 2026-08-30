@@ -311,8 +311,9 @@ export default function LandingPage() {
                     <p className="text-xs text-slate-500 dark:text-slate-400 h-8">{plan.desc}</p>
                   </div>
 
-                  <div className="flex items-baseline gap-1 mb-8">
-                    <span className="text-4xl font-extrabold text-slate-900 dark:text-white">${plan.price}</span>
+                  <div className="flex items-baseline gap-1.5 mb-8">
+                    <span className="text-4xl font-extrabold text-slate-900 dark:text-white">K{plan.price}</span>
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">PGK</span>
                     <span className="text-sm font-medium text-slate-500 dark:text-slate-400">/month</span>
                   </div>
 

@@ -119,7 +119,7 @@ export default function BankingPage() {
               >
                 <div className="font-medium">{a.name}</div>
                 <div className="text-xs text-muted-foreground">
-                  {a.currency} · bal {a.current_balance}
+                  bal K{a.current_balance} PGK
                 </div>
               </button>
             ))}
@@ -143,7 +143,7 @@ export default function BankingPage() {
                   onChange={(e) => setForm({ ...form, bank_name: e.target.value })}
                 />
                 <Input
-                  placeholder="Opening balance"
+                  placeholder="Opening balance (PGK)"
                   type="number"
                   value={form.opening_balance}
                   onChange={(e) =>
@@ -167,10 +167,10 @@ export default function BankingPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {summary.data && (
-              <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                <div>Balance: {summary.data.current_balance}</div>
-                <div>Reconciled: {summary.data.reconciled}</div>
-                <div>Unreconciled: {summary.data.unreconciled}</div>
+              <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground font-medium">
+                <div>Balance: K{summary.data.current_balance} PGK</div>
+                <div>Reconciled: K{summary.data.reconciled} PGK</div>
+                <div>Unreconciled: K{summary.data.unreconciled} PGK</div>
               </div>
             )}
             <form
@@ -182,7 +182,7 @@ export default function BankingPage() {
             >
               <Input type="date" value={tx.date} onChange={(e) => setTx({ ...tx, date: e.target.value })} required />
               <Input placeholder="Description" value={tx.description} onChange={(e) => setTx({ ...tx, description: e.target.value })} required />
-              <Input type="number" placeholder="Amount" value={tx.amount} onChange={(e) => setTx({ ...tx, amount: e.target.value })} required />
+              <Input type="number" placeholder="Amount (PGK)" value={tx.amount} onChange={(e) => setTx({ ...tx, amount: e.target.value })} required />
               <select
                 className="h-10 rounded-md border border-input bg-background px-2 text-sm"
                 value={tx.type}
@@ -202,7 +202,7 @@ export default function BankingPage() {
                   <tr key={t.id} className="border-b">
                     <td className="py-2">{t.date}</td>
                     <td>{t.description}</td>
-                    <td className="text-right">{t.type === "debit" ? "-" : ""}{t.amount}</td>
+                    <td className="text-right font-medium">{t.type === "debit" ? "-" : ""}K{t.amount} PGK</td>
                     <td className="text-right text-xs">
                       {t.is_reconciled ? "✓" : "pending"}
                     </td>
