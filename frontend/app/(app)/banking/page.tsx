@@ -82,8 +82,12 @@ export default function BankingPage() {
   });
 
   const reconcile = useMutation({
-    mutationFn: async () =>
-      (await api.post(`/bank-accounts/${accountId}/reconcile`, {})).data,
+    mutationFn: async () => {
+      const unreconciled = (transactions.data ?? []).filter((t) => !t.is_reconciled);
+      await Promise.all(
+        unreconciled.map((t) => api.post(`/bank-transactions/${t.id}/reconcile`, {}))
+      );
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bank-transactions", accountId] });
       qc.invalidateQueries({ queryKey: ["bank-summary", accountId] });

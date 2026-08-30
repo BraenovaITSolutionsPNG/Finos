@@ -12,7 +12,11 @@ export function NotificationsBell() {
 
   const list = useQuery<Notification[]>({
     queryKey: ["notifications"],
-    queryFn: async () => (await api.get("/notifications")).data,
+    queryFn: async () => {
+      const res = await api.get("/notifications");
+      // Backend returns paginated data: { data: [...], meta: {...} }
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
   const count = useQuery<{ count: number }>({
     queryKey: ["notifications-unread"],

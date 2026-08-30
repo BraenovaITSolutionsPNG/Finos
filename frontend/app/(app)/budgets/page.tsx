@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import type { Budget } from "@/lib/types";
+import type { Account, Budget } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,13 +19,28 @@ export default function BudgetsPage() {
   const year = new Date().getFullYear();
   const [y, setY] = useState(year);
 
+  // Load accounts for the dropdown
+  const { data: accounts } = useQuery<Account[]>({
+    queryKey: ["accounts"],
+    queryFn: async () => {
+      const res = await api.get("/accounts");
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
+  });
+
   const budgets = useQuery<Budget[]>({
     queryKey: ["budgets", y],
-    queryFn: async () => (await api.get(`/budgets?year=${y}`)).data,
+    queryFn: async () => {
+      const res = await api.get(`/budgets?year=${y}`);
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
   const comparison = useQuery<{ account_id: number; name: string; budget: number; actual: number }[]>({
     queryKey: ["budgets-comparison", y],
-    queryFn: async () => (await api.get(`/budgets/comparison?year=${y}`)).data,
+    queryFn: async () => {
+      const res = await api.get(`/budgets/comparison?year=${y}`);
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
 
   const [form, setForm] = useState({
@@ -81,14 +96,21 @@ export default function BudgetsPage() {
               className="space-y-3"
             >
               <div className="space-y-1">
-                <Label htmlFor="account_id">Account ID</Label>
-                <Input
+                <Label htmlFor="account_id">Account</Label>
+                <select
                   id="account_id"
-                  type="number"
+                  className="h-10 w-full rounded-md border border-input bg-background px-2 text-sm"
                   value={form.account_id}
                   onChange={(e) => setForm({ ...form, account_id: e.target.value })}
                   required
-                />
+                >
+                  <option value="">Select account…</option>
+                  {(accounts ?? []).map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.code} — {a.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="month">Month</Label>
@@ -146,8 +168,8 @@ export default function BudgetsPage() {
                     <td className="py-2">{c.name}</td>
                     <td>{c.budget}</td>
                     <td>{c.actual}</td>
-                    <td className={c.actual > c.budget ? "text-destructive" : ""}>
-                      {c.actual - c.budget}
+                    <td className={c.actual > c.budget ? "text-destructive" : "text-green-600"}>
+                      {c.actual > c.budget ? "+" : ""}{c.actual - c.budget}
                     </td>
                   </tr>
                 ))}

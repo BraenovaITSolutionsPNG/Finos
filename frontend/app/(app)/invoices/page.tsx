@@ -19,7 +19,11 @@ export default function InvoicesPage() {
   const qc = useQueryClient();
   const { data: invoices } = useQuery<Invoice[]>({
     queryKey: ["invoices"],
-    queryFn: async () => (await api.get("/invoices")).data,
+    queryFn: async () => {
+      const res = await api.get("/invoices");
+      // Backend paginates: { data: [...], meta: {...} }
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
   const { data: customers } = useQuery<Customer[]>({
     queryKey: ["customers"],

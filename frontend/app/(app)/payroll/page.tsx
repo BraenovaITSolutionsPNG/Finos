@@ -53,7 +53,7 @@ export default function PayrollPage() {
   });
   const process = useMutation({
     mutationFn: async () =>
-      (await api.post("/payroll", { period_start: period.start, period_end: period.end })).data,
+      (await api.post("/payroll/process", { period_start: period.start, period_end: period.end })).data,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["payroll-runs"] }),
   });
 
