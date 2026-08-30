@@ -74,6 +74,10 @@ class AdminController extends Controller
                 'plan_id' => $s->plan_id,
                 'plan_name' => $s->plan?->name ?? '—',
                 'plan_price' => $s->plan?->price ?? 0,
+                'payment_method' => $s->payment_method ?? '—',
+                'payment_reference' => $s->payment_reference ?? '—',
+                'payment_receipt_url' => $s->payment_receipt_url,
+                'payment_notes' => $s->payment_notes,
                 'status' => $s->status,
                 'created_at' => $s->created_at,
             ]);
