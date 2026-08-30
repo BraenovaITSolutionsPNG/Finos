@@ -127,6 +127,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('stats', [AdminController::class, 'stats']);
         Route::get('tenants', [AdminController::class, 'tenants']);
         Route::get('users', [AdminController::class, 'users']);
+        Route::get('subscriptions', [AdminController::class, 'subscriptions']);
+        Route::post('subscriptions/{subscription}/approve', [AdminController::class, 'approveSubscription']);
+        Route::post('subscriptions/{subscription}/suspend', [AdminController::class, 'suspendSubscription']);
+        Route::post('subscriptions/{subscription}/reject', [AdminController::class, 'rejectSubscription']);
         Route::post('tenants/{tenant}/suspend', [AdminController::class, 'suspend']);
         Route::post('tenants/{tenant}/activate', [AdminController::class, 'activate']);
     });

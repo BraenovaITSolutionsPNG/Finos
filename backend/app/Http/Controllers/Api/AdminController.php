@@ -61,6 +61,54 @@ class AdminController extends Controller
         return response()->json($users);
     }
 
+    public function subscriptions(): JsonResponse
+    {
+        $this->guard();
+        $subs = Subscription::with(['tenant', 'plan'])
+            ->orderByDesc('created_at')
+            ->paginate(25)
+            ->through(fn (Subscription $s) => [
+                'id' => $s->id,
+                'tenant_id' => $s->tenant_id,
+                'tenant_name' => $s->tenant?->name ?? '—',
+                'plan_id' => $s->plan_id,
+                'plan_name' => $s->plan?->name ?? '—',
+                'plan_price' => $s->plan?->price ?? 0,
+                'status' => $s->status,
+                'created_at' => $s->created_at,
+            ]);
+
+        return response()->json($subs);
+    }
+
+    public function approveSubscription(Subscription $subscription): JsonResponse
+    {
+        $this->guard();
+        $subscription->update([
+            'status' => 'active',
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+        ]);
+
+        return response()->json(['message' => 'Subscription approved & activated.']);
+    }
+
+    public function suspendSubscription(Subscription $subscription): JsonResponse
+    {
+        $this->guard();
+        $subscription->update(['status' => 'suspended']);
+
+        return response()->json(['message' => 'Subscription suspended.']);
+    }
+
+    public function rejectSubscription(Subscription $subscription): JsonResponse
+    {
+        $this->guard();
+        $subscription->update(['status' => 'rejected']);
+
+        return response()->json(['message' => 'Subscription rejected.']);
+    }
+
     public function suspend(Tenant $tenant): JsonResponse
     {
         $this->guard();

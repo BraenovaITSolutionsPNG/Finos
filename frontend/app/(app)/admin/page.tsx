@@ -33,6 +33,17 @@ interface UserItem {
   is_admin: boolean;
 }
 
+interface SubscriptionItem {
+  id: number;
+  tenant_id: number;
+  tenant_name: string;
+  plan_id: number;
+  plan_name: string;
+  plan_price: number;
+  status: "pending" | "active" | "suspended" | "rejected" | string;
+  created_at: string;
+}
+
 export default function AdminPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -55,6 +66,23 @@ export default function AdminPage() {
     queryFn: async () => {
       const res = await api.get("/admin/users");
       return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
+  });
+
+  const subscriptions = useQuery<SubscriptionItem[]>({
+    queryKey: ["admin-subscriptions"],
+    queryFn: async () => {
+      const res = await api.get("/admin/subscriptions");
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
+  });
+
+  const updateSubStatus = useMutation({
+    mutationFn: async ({ id, action }: { id: number; action: "approve" | "suspend" | "reject" }) =>
+      (await api.post(`/admin/subscriptions/${id}/${action}`)).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-subscriptions"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
     },
   });
 
@@ -83,7 +111,7 @@ export default function AdminPage() {
       <div>
         <h1 className="text-2xl font-bold">Platform Administration</h1>
         <p className="text-sm text-muted-foreground">
-          Cross-tenant system oversight and account management.
+          Cross-tenant system oversight, subscription approvals, and account management.
         </p>
       </div>
 
@@ -91,8 +119,99 @@ export default function AdminPage() {
         <Stat label="Total Organizations" value={stats.data?.tenants_total} />
         <Stat label="Active Organizations" value={stats.data?.tenants_active} />
         <Stat label="Total Users" value={stats.data?.users_total} />
-        <Stat label="Active Subscriptions" value={stats.data?.subscriptions_total} />
+        <Stat label="Subscriptions Total" value={stats.data?.subscriptions_total} />
       </div>
+
+      {/* Subscription Requests & Submissions Review */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Subscription Submissions &amp; Approvals ({subscriptions.data?.length ?? 0})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-muted-foreground">
+                  <th className="py-2">Organization</th>
+                  <th>Plan Requested</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(subscriptions.data ?? []).map((sub) => (
+                  <tr key={sub.id} className="border-b">
+                    <td className="py-3 font-semibold">{sub.tenant_name}</td>
+                    <td>{sub.plan_name}</td>
+                    <td className="font-medium">K{sub.plan_price} PGK</td>
+                    <td>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                          sub.status === "active"
+                            ? "bg-green-500/10 text-green-600"
+                            : sub.status === "pending"
+                            ? "bg-amber-500/10 text-amber-600"
+                            : sub.status === "suspended"
+                            ? "bg-red-500/10 text-red-600"
+                            : "bg-gray-500/10 text-gray-600"
+                        }`}
+                      >
+                        {sub.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="text-xs text-muted-foreground">
+                      {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : "—"}
+                    </td>
+                    <td className="text-right space-x-1 py-3">
+                      {sub.status !== "active" && (
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs"
+                          onClick={() => updateSubStatus.mutate({ id: sub.id, action: "approve" })}
+                          disabled={updateSubStatus.isPending}
+                        >
+                          Approve
+                        </Button>
+                      )}
+                      {sub.status !== "suspended" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs text-amber-600 border-amber-300 hover:bg-amber-50"
+                          onClick={() => updateSubStatus.mutate({ id: sub.id, action: "suspend" })}
+                          disabled={updateSubStatus.isPending}
+                        >
+                          Suspend
+                        </Button>
+                      )}
+                      {sub.status !== "rejected" && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="h-7 text-xs"
+                          onClick={() => updateSubStatus.mutate({ id: sub.id, action: "reject" })}
+                          disabled={updateSubStatus.isPending}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {(subscriptions.data ?? []).length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="py-6 text-center text-muted-foreground">
+                      No subscription submissions yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>

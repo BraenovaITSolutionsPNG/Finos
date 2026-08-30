@@ -33,27 +33,22 @@ class SubscriptionController extends Controller
 
         $tenant = TenantContext::requireTenant();
         $plan = Plan::findOrFail($request->input('plan_id'));
+        $subscription = null;
 
-        // Begin DB transaction to ensure atomicity
-        DB::transaction(function () use ($tenant, $plan) {
-            // Cancel any existing subscription for this tenant
+        DB::transaction(function () use ($tenant, $plan, &$subscription) {
             Subscription::where('tenant_id', $tenant->id)->delete();
 
-            // Create new subscription
+            // Set status to 'pending' for paid plans awaiting admin approval, or 'active' for free plan
+            $status = ($plan->price > 0) ? 'pending' : 'active';
+
             $subscription = Subscription::create([
                 'plan_id' => $plan->id,
                 'tenant_id' => $tenant->id,
-                'status' => 'active',
+                'status' => $status,
                 'trial_ends_at' => $plan->trial_days > 0 ? now()->addDays($plan->trial_days) : null,
                 'current_period_start' => now(),
-                'current_period_end' => now()->add($plan->interval),
+                'current_period_end' => now()->addMonth(),
             ]);
-
-            // If trial days exist, set status to trialing until trial_ends_at
-            if ($plan->trial_days > 0) {
-                $subscription->status = 'trialing';
-                $subscription->save();
-            }
         });
 
         return response()->json(new SubscriptionResource($subscription->load('plan')), 201);
