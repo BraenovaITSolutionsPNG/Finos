@@ -203,7 +203,7 @@ export default function AdminPage() {
                             : "bg-gray-500/10 text-gray-600"
                         }`}
                       >
-                        {sub.status.toUpperCase()}
+                        {(sub.status || "active").toUpperCase()}
                       </span>
                     </td>
                     <td className="text-xs text-muted-foreground">

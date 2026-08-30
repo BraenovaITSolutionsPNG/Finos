@@ -99,7 +99,9 @@ export default function SubscriptionPage() {
                       : "bg-red-500/10 text-red-600"
                   }`}
                 >
-                  {currentSub.status === "pending" ? "AWAITING ADMIN APPROVAL" : currentSub.status.toUpperCase()}
+                  {currentSub.status === "pending"
+                    ? "AWAITING ADMIN APPROVAL"
+                    : (currentSub.status || "active").toUpperCase()}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
