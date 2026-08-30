@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+p-lock.yaml
+
+# Environment variables
+.env
+
+# Next.js build output
+.next/
+out/
+
+# Docker / PostgreSQL
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Laravel
+/storage/
+bootstrap/cache/
+
+# Backend logs
+*.log
