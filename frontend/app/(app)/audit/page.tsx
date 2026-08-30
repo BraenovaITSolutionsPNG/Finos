@@ -13,7 +13,10 @@ import {
 export default function AuditPage() {
   const { data } = useQuery<AuditLog[]>({
     queryKey: ["audit-logs"],
-    queryFn: async () => (await api.get("/audit-logs")).data,
+    queryFn: async () => {
+      const res = await api.get("/audit-logs");
+      return Array.isArray(res.data) ? res.data : (res.data.data ?? []);
+    },
   });
 
   return (
